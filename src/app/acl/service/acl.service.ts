@@ -10,12 +10,12 @@ export class AclService{
 
   // 获取所有数据
   get data() {
-    console.log('dadasdas');
     return{
       roles: this.roles,
       full:this.full,
       abilities:this.abilities
-    }
+    };
   }
+
 
 }

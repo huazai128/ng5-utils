@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject'; //发送最近一次数据
 import { share } from 'rxjs/operators'; // 转成Subject类型，可以一对多推送
 import { AclService } from '@acl';
-import { I18nService,I18N_TOKEN } from '@theme';
+import { I18nService,I18N_TOKEN } from '../i18n/i18n.service';
 
 export interface Menu {
   // 文本
@@ -78,15 +78,61 @@ export class MenuService implements OnDestroy{
     @Optional() private alService:AclService
   ) { }
 
+  get change():Observable<Menu[]>{
+    return this._changes$.pipe(share()); // 把Observable转成Subject对象
+  }
+
   // 获取路由数据
   public add(items:Menu[]){
     this.menus = [...items];
-    console.log(this.menus);
+    this.resetRouter(); //  重置路由
+  }
+
+  public visit(callback?:(item: Menu, parentMenum: Menu, depth?: number) => void){
+    const inFn = (lists:Menu[],parentMenu:Menu,depth:number) => {
+      for(const item of lists){
+        callback(item,parentMenu,depth);
+        if(item.children && item.children.length > 0){
+          inFn(item.children,item,depth+1);
+        }else{
+          item.children = [];
+        }
+      }
+    }
+    inFn(this.menus,null,0);
   }
 
   // 重置路由
-  public resetRouter() {
+  public resetRouter(callback?:(item:Menu,parentMenu:Menu,depth?:number) => void) {
+    let i = 1;
+    this.removeShortcut();
+    const shortcuts:Menu[] = [];
+    this.visit((item,parentMenu,depth) => {
+      item.__id = i++;
+      item.__parent = parentMenu;
+      item._depth = depth;
+      if(!item.link) item.link = '';
+      if(!item.externalLink) item.externalLink = '';
+      if(item.badge){
+        if(!item.badge_dot){
+          item.badge_dot = false;
+        }
+        if(!item.badge_status){
+          item.badge_status = 'error';
+        }
+      }
+      item._type = item.externalLink ? 2 : 1;
+      if (item.children && item.children.length > 0) {
+        item._type = 3;
+      }
+    })
+  }
 
+  private removeShortcut(){
+    // 获取第一个子路由
+    const ls = this.menus && this.menus.length && this.menus[0].children || [];
+    const pos = ls.findIndex((item) => (item.shortcut_root === true));
+    if(pos !== -1) ls.splice(pos,1); // 删除pos数据
   }
 
   ngOnDestroy(){

@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { SettingService,MenuService,Menu } from '@theme';
 
-
 @Component({
   selector:'app-theme',
   templateUrl:'./pages.html',
