@@ -1,4 +1,4 @@
-import { Component,ElementRef,Renderer2,Inject,OnInit,OnDestroy,HostListener,ChangeDetectionStrategy,ChangeDetectorRef } from '@angular/core';
+import { Component,ElementRef,Renderer2,Inject,OnInit,OnDestroy,HostListener,ChangeDetectionStrategy,ChangeDetectorRef, Optional } from '@angular/core';
 import { Router } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
 import { Subscription } from 'rxjs/Subscription';
@@ -22,7 +22,8 @@ export class SidebarComponent implements OnInit,OnDestroy{
 
   public list:Menu[]; // 路由集合
 
-  constructor(){
+  constructor(
+  ){
 
   }
   ngOnInit(){

@@ -20,7 +20,9 @@
       "@theme":["app/theme"],
       "@theme/*":["app/theme/*"],
       "@component":["app/component"],
-      "@component/*":["app/component/*"]
+      "@component/*":["app/component/*"],
+      "@acl":["app/acl"],
+      "@acl/*":["app/acl/*"]
     }
   }
 }

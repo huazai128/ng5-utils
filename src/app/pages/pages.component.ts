@@ -8,7 +8,7 @@ import { SettingService,MenuService,Menu } from '@theme';
 })
 
 export class PagesComponent{
-  public munes:Menu[] = [
+  munes:Menu[] = [
     {
       text: 'test',
       group: true,
@@ -65,6 +65,6 @@ export class PagesComponent{
   ){}
 
   ngOnInit():void{
-
+    this.menuService.add(this.munes);
   };
 }

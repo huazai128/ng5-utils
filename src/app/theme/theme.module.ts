@@ -7,12 +7,14 @@ import { ScrollService } from '@theme/services/scroll/scroll.service';
 import { ThemeService } from '@theme/services/themes/themes.service';
 import { SettingService } from '@theme/services/setting/setting.service';
 import { MenuService } from '@theme/services/menu/menu.service';
+import { I18nService } from '@theme/services/i18n/i18n.service'
 
 const NG_SERVICE = [
   ScrollService,
   ThemeService,
   SettingService,
-  MenuService
+  MenuService,
+  I18nService
 ]
 
 @NgModule({

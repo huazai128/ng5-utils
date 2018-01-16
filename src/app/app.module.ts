@@ -4,7 +4,7 @@ import { ThemeModule } from '@theme/theme.module';
 import { RouterModule } from '@angular/router';
 import { PagesModule } from './pages/pages.module';
 import { ComponentModule } from '@component/component.module';
-
+import { AclModule } from '@acl/acl.module';
 import { AppComponent } from './app.component';
 
 @NgModule({
@@ -14,6 +14,7 @@ import { AppComponent } from './app.component';
   imports: [
     BrowserModule,
     ThemeModule.forRoot(),
+    AclModule.forRoot(),
     RouterModule,
     PagesModule,
     ComponentModule
