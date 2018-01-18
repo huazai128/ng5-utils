@@ -31,6 +31,8 @@ export interface Menu {
   // acl配置 若导入 @delon/acl 时自动有效
   acl?: any;
   // 是否显示快捷菜单项
+  shortcut?: boolean;
+  // 是否显示快捷菜单项
   shortcut_root?: boolean;
   // 是否允许服用，需配合 `reuse-tab` 组件
   reuse?: boolean;
@@ -75,7 +77,7 @@ export class MenuService implements OnDestroy{
 
   constructor(
     @Optional() @Inject(I18N_TOKEN) private i18nService:I18nService,
-    @Optional() private alService:AclService
+    @Optional() private alcService:AclService
   ) { }
 
   get change():Observable<Menu[]>{
@@ -106,7 +108,7 @@ export class MenuService implements OnDestroy{
   public resetRouter(callback?:(item:Menu,parentMenu:Menu,depth?:number) => void) {
     let i = 1;
     this.removeShortcut();
-    const shortcuts:Menu[] = [];
+    const shortcuts:Menu[] = []; // 存储快捷菜单数据
     this.visit((item,parentMenu,depth) => {
       item.__id = i++;
       item.__parent = parentMenu;
@@ -124,6 +126,18 @@ export class MenuService implements OnDestroy{
       item._type = item.externalLink ? 2 : 1;
       if (item.children && item.children.length > 0) {
         item._type = 3;
+      }
+      // 快捷菜单
+      if(item.shortcut === true && (item.link ||  item.externalLink)){
+        shortcuts.push(item);
+      }
+      const i18n = item.i18n || item.translate;
+      item.text = this.i18nService && i18n ? this.i18nService.fanyi(i18n) : item.text;
+      item._hidden = typeof item.hide === 'undefined' ? false : item.hide;
+
+      // 权限控制
+      if(item.acl && this.alcService){
+        item._hidden = !this.alcService.can(item.acl);
       }
     })
   }

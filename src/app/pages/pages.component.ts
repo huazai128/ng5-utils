@@ -15,12 +15,14 @@ export class PagesComponent{
         {
           text: 'Dashboard',
           link: '/dashboard',
-          icon: 'anticon anticon-appstore-o'
+          icon: 'anticon anticon-appstore-o',
+          acl: 1
         },
         {
           text: 'Level1',
           link: '/level',
           icon: 'anticon anticon-appstore-o',
+          acl: 2,
           children: [
             {
               text: 'Level2',

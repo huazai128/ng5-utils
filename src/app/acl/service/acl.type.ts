@@ -1,6 +1,6 @@
 export interface ACLType {
   // 角色
-  role?;string;
+  role?:string[];
 
   // 权限
   ability?:number[] | string[];
