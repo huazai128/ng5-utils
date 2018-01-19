@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ACLCanType,ACLType } from './acl.type';
-import {type} from "os";
 
 // 控制权限访问
 @Injectable()
@@ -50,13 +49,15 @@ export class AclService{
     return false;
   }
   // 其他acl 传递的类型
-  private parseACLType(val:string | string[] | ACLType):ACLType{
-    if(typeof val !== 'string' && !Array.isArray(val)){
+  private parseACLType(val: ACLCanType):ACLType {
+    if (typeof val !== 'string' && !Array.isArray(val)) {
       return <ACLType>val;
     }
-    if(Array.isArray(val)){
-      return <ACLType>{ role:<string[]>val };
+    if (Array.isArray(val)) {
+      return <ACLType>{ role: <string[]>val };
     }
-    return <ACLType>{role:[val]};
+    return <ACLType>{
+      role: [val]
+    };
   }
 }

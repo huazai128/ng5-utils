@@ -139,15 +139,47 @@ export class MenuService implements OnDestroy{
       if(item.acl && this.alcService){
         item._hidden = !this.alcService.can(item.acl);
       }
-    })
+      if (callback) callback(item, parentMenu, depth);
+    });
+    this.loadShortcut(shortcuts);
+    this._changes$.next(this.menus);
   }
-
+  // 删除快捷菜单
   private removeShortcut(){
     // 获取第一个子路由
     const ls = this.menus && this.menus.length && this.menus[0].children || [];
     const pos = ls.findIndex((item) => (item.shortcut_root === true));
     if(pos !== -1) ls.splice(pos,1); // 删除pos数据
   }
+
+  // 加载快捷菜单
+  private loadShortcut(shortcuts:Menu[]){
+    if(!shortcuts.length || !this.menus.length) return false;
+    const ls = this.menus[0].children || [];
+    const pos  =  ls.findIndex((item) => Object.is(item.shortcut_root,true))
+    if(pos === -1){
+      pos = ls.findIndex(w => w.link.includes('dashboard') || w.externalLink.includes('dashboard'));
+      pos = (pos !== -1 ? pos : -1) + 1;
+      this.data[0].children.splice(pos, 0, {
+        text: '快捷菜单',
+        translate: 'shortcut',
+        icon: 'icon-rocket',
+        children: []
+      });
+    }
+    let _data = this.data[0].children[pos];
+    _data = Object.assign(_data, {
+      shortcut_root: true,
+      _type: 3,
+      __id: -1,
+      _depth: 1
+    });
+    _data.children = shortcuts.map(i => {
+      i._depth = 2;
+      return i;
+    });
+  }
+
 
   ngOnDestroy(){
 
