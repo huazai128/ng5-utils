@@ -81,7 +81,7 @@
   div3.style.height = dHeight -30 + "px";
   var li = document.getElementsByTagName("li");
   li[0].onclick = function(){
-    div1.scrollIntoView(true);		  //这里不能给true不然会将会与导航条重叠
+    div1.scrollIntoView(false);		  //这里不能给true不然会将会与导航条重叠
   }
   li[1].onclick = function(){
     div2.scrollIntoView(false);

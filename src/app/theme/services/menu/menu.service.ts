@@ -156,18 +156,18 @@ export class MenuService implements OnDestroy{
   private loadShortcut(shortcuts:Menu[]){
     if(!shortcuts.length || !this.menus.length) return false;
     const ls = this.menus[0].children || [];
-    const pos  =  ls.findIndex((item) => Object.is(item.shortcut_root,true))
+    let pos  =  ls.findIndex((item) => Object.is(item.shortcut_root,true));
     if(pos === -1){
       pos = ls.findIndex(w => w.link.includes('dashboard') || w.externalLink.includes('dashboard'));
       pos = (pos !== -1 ? pos : -1) + 1;
-      this.data[0].children.splice(pos, 0, {
+      this.menus[0].children.splice(pos, 0, {
         text: '快捷菜单',
         translate: 'shortcut',
         icon: 'icon-rocket',
         children: []
       });
     }
-    let _data = this.data[0].children[pos];
+    let _data = this.menus[0].children[pos];
     _data = Object.assign(_data, {
       shortcut_root: true,
       _type: 3,

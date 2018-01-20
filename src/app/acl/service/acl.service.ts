@@ -16,7 +16,6 @@ export class AclService{
       abilities:this.abilities
     };
   }
-
   /**
    * 当前用户是否有对应权限,number
    */
