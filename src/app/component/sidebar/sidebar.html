@@ -1,7 +1,16 @@
 <div class="nav">
-  <ng-container >
-    <ng-template *ngIf="">
-
+  <ng-container *ngFor="let item of lists">
+    <ng-template [ngIf]="item._hidden !== true">
+      <li class="nav-group-title">
+        <span>{{item.text}}</span>
+      </li>
+      <ng-container *ngFor="let child of item.children">
+        <li [ngIf]="!child._hidden" [routerLinkActive]="['nav-item-selected']" [class.nav-submenu-open]="child._open">
+          <a *ngIf="child._type === 1" [rouerLink]="child.link" [target]="child.target">
+            <i *ngIf=""></i>
+          </a>
+        </li>
+      </ng-container>
     </ng-template>
   </ng-container>
 </div>

@@ -180,6 +180,28 @@ export class MenuService implements OnDestroy{
     });
   }
 
+  // 根据URL设置菜单`open`属性
+  openedByUrl(url:string){
+    if(!url) return false;
+    let findItem:Menu = null;
+    this.visit((item) => {
+      item._open = false;
+      if(!item.link){
+        return false;
+      }
+      if(!findItem && url.startsWith(item.link)){ // startsWith用于检查string字符串开始数据
+        findItem = item;
+      }
+    })
+    if(!findItem){
+      console.warn(`not found page name:${url}`);
+      return false;
+    }
+    do {
+      findItem._open = true;
+      findItem = findItem.__parent;
+    } while (findItem);
+  }
 
   ngOnDestroy(){
 

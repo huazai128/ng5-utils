@@ -20,16 +20,37 @@ export class SidebarComponent implements OnInit,OnDestroy{
   private floatingEl:HTMLDivElement;
   private bodyEl:HTMLBodyElement;
 
-  public list:Menu[]; // 路由集合
+  public lists:Menu[]; // 路由集合
+  public _change$:Subscription;
 
   constructor(
+    private menuSer:MenuService,
+    private settingSer:SettingService,
+    private router:Router,
+    private el:ElementRef, // 元素属性操作
+    private render:Renderer2, // DEMO操作
+    @Inject(DOCUMENT) private doc:any,
   ){
-
+    this.rootEl = el.nativeElement as HTMLDivElement;
   }
   ngOnInit(){
-
+    this.bodyEl = this.doc.querySelector('body');
+    this.menuSer.openedByUrl(this.router.url);// 传递当前路由路径
+    this._change$ = this.menuSer.change.subscribe((res) => {
+      this.lists = res;
+    })
   }
-  ngOnDestroy(){
+  genFloatingContainer(){
+    if(this.floatingEl){
+      this.floatingEl.remove();
+      this.floatingEl.removeEventListener("click",() => {
 
+
+      })
+    }
+  }
+
+  ngOnDestroy(){
+    if(this._change$) this._change$.unsubscribe(); // 取消订阅防止资源浪费
   }
 }
