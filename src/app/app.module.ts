@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { ThemeModule } from '@theme/theme.module';
 import { RouterModule } from '@angular/router';
 import { PagesModule } from './pages/pages.module';
-import { ComponentModule } from '@component/component.module';
+import { AlineModule } from '@component/index';
 import { AclModule } from '@acl/acl.module';
 import { AppComponent } from './app.component';
 
@@ -15,9 +15,10 @@ import { AppComponent } from './app.component';
     BrowserModule,
     ThemeModule.forRoot(),
     AclModule.forRoot(),
+    AlineModule.forRoot(),
     RouterModule,
     PagesModule,
-    ComponentModule
+
   ],
   providers: [],
   bootstrap: [AppComponent]

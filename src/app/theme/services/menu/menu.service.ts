@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject'; //发送最近一次数据
 import { share } from 'rxjs/operators'; // 转成Subject类型，可以一对多推送
 import { AclService } from '@acl';
-import { I18nService,I18N_TOKEN } from '../i18n/i18n.service';
+import { I18nService, I18N_TOKEN } from '../i18n/i18n.service';
 
 export interface Menu {
   // 文本
@@ -70,56 +70,56 @@ export interface Menu {
 }
 
 @Injectable()
-export class MenuService implements OnDestroy{
+export class MenuService implements OnDestroy {
 
   private _changes$: BehaviorSubject<Menu[]> = new BehaviorSubject<Menu[]>([]);
   private menus: Menu[] = [];
 
   constructor(
-    @Optional() @Inject(I18N_TOKEN) private i18nService:I18nService,
-    @Optional() private alcService:AclService
+    @Optional() @Inject(I18N_TOKEN) private i18nService: I18nService,
+    @Optional() private alcService: AclService
   ) { }
 
-  get change():Observable<Menu[]>{
+  get change(): Observable<Menu[]> {
     return this._changes$.pipe(share()); // 把Observable转成Subject对象
   }
 
   // 获取路由数据
-  public add(items:Menu[]){
+  public add(items: Menu[]) {
     this.menus = [...items];
     this.resetRouter(); //  重置路由
   }
 
-  public visit(callback?:(item: Menu, parentMenum: Menu, depth?: number) => void){
-    const inFn = (lists:Menu[],parentMenu:Menu,depth:number) => {
-      for(const item of lists){
-        callback(item,parentMenu,depth);
-        if(item.children && item.children.length > 0){
-          inFn(item.children,item,depth+1);
-        }else{
+  public visit(callback?: (item: Menu, parentMenum: Menu, depth?: number) => void) {
+    const inFn = (lists: Menu[], parentMenu: Menu, depth: number) => {
+      for (const item of lists) {
+        callback(item, parentMenu, depth);
+        if (item.children && item.children.length > 0) {
+          inFn(item.children, item, depth + 1);
+        } else {
           item.children = [];
         }
       }
     }
-    inFn(this.menus,null,0);
+    inFn(this.menus, null, 0);
   }
 
   // 重置路由
-  public resetRouter(callback?:(item:Menu,parentMenu:Menu,depth?:number) => void) {
+  public resetRouter(callback?: (item: Menu, parentMenu: Menu, depth?: number) => void) {
     let i = 1;
     this.removeShortcut();
-    const shortcuts:Menu[] = []; // 存储快捷菜单数据
-    this.visit((item,parentMenu,depth) => {
+    const shortcuts: Menu[] = []; // 存储快捷菜单数据
+    this.visit((item, parent, depth) => {
       item.__id = i++;
-      item.__parent = parentMenu;
+      item.__parent = parent;
       item._depth = depth;
-      if(!item.link) item.link = '';
-      if(!item.externalLink) item.externalLink = '';
-      if(item.badge){
-        if(!item.badge_dot){
+      if (!item.link) item.link = '';
+      if (!item.externalLink) item.externalLink = '';
+      if (item.badge) {
+        if (!item.badge_dot) {
           item.badge_dot = false;
         }
-        if(!item.badge_status){
+        if (!item.badge_status) {
           item.badge_status = 'error';
         }
       }
@@ -128,7 +128,7 @@ export class MenuService implements OnDestroy{
         item._type = 3;
       }
       // 快捷菜单
-      if(item.shortcut === true && (item.link ||  item.externalLink)){
+      if (item.shortcut === true && (item.link || item.externalLink)) {
         shortcuts.push(item);
       }
       const i18n = item.i18n || item.translate;
@@ -136,28 +136,28 @@ export class MenuService implements OnDestroy{
       item._hidden = typeof item.hide === 'undefined' ? false : item.hide;
 
       // 权限控制
-      if(item.acl && this.alcService){
+      if (item.acl && this.alcService) {
         item._hidden = !this.alcService.can(item.acl);
       }
-      if (callback) callback(item, parentMenu, depth);
+      if (callback) callback(item, parent, depth);
     });
     this.loadShortcut(shortcuts);
     this._changes$.next(this.menus);
   }
   // 删除快捷菜单
-  private removeShortcut(){
+  private removeShortcut() {
     // 获取第一个子路由
     const ls = this.menus && this.menus.length && this.menus[0].children || [];
     const pos = ls.findIndex((item) => (item.shortcut_root === true));
-    if(pos !== -1) ls.splice(pos,1); // 删除pos数据
+    if (pos !== -1) ls.splice(pos, 1); // 删除pos数据
   }
 
   // 加载快捷菜单
-  private loadShortcut(shortcuts:Menu[]){
-    if(!shortcuts.length || !this.menus.length) return false;
+  private loadShortcut(shortcuts: Menu[]) {
+    if (!shortcuts.length || !this.menus.length) return false;
     const ls = this.menus[0].children || [];
-    let pos  =  ls.findIndex((item) => Object.is(item.shortcut_root,true));
-    if(pos === -1){
+    let pos = ls.findIndex((item) => Object.is(item.shortcut_root, true));
+    if (pos === -1) {
       pos = ls.findIndex(w => w.link.includes('dashboard') || w.externalLink.includes('dashboard'));
       pos = (pos !== -1 ? pos : -1) + 1;
       this.menus[0].children.splice(pos, 0, {
@@ -180,8 +180,33 @@ export class MenuService implements OnDestroy{
     });
   }
 
+  openedByUrl(url: string) {
+    if (!url) {
+      return;
+    }
 
-  ngOnDestroy(){
+    let findItem: Menu = null;
+    this.visit(item => {
+      item._open = false;
+      if (!item.link) {
+        return;
+      }
+      if (!findItem && url.startsWith(item.link)) {
+        findItem = item;
+      }
+    });
+    if (!findItem) {
+      console.warn(`not found page name: ${url}`);
+      return;
+    }
+
+    do {
+      findItem._open = true;
+      findItem = findItem.__parent;
+    } while (findItem);
+  }
+
+  ngOnDestroy() {
 
   }
 }
